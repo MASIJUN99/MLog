@@ -135,7 +135,7 @@ public class MLogAspect {
               getStringValue(mLog.operator(), context) :  // 解析SpEL获得
               operatorService.getCurrentOperator());  // 通过接口获得
           // 3.2 是否成功
-          builder.success(StringUtils.hasText(exceptionContent));
+          builder.success(!StringUtils.hasText(exceptionContent));
           builder.exception(StringUtils.hasText(exceptionContent) ? "" : exceptionContent);
           // 3.3 业务实体坐标
           builder.business(mLog.business().getName());
