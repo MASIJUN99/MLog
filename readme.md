@@ -55,7 +55,7 @@ Contribute makes open-source community which place to learn, create and inspire.
 
 Any code you contributed will make this community better!
 
-See more in [development guide](./development.md)
+See more in [development guide](documents/development.md)
 
 ## SNAPSHOT
 
@@ -68,3 +68,9 @@ See more in [development guide](./development.md)
 ## Reference
 
 [如何优雅地记录操作日志？](https://mp.weixin.qq.com/s/JC51S_bI02npm4CE5NEEow)
+
+## Document
+
+[Update Log](documents/update_log.md)
+
+[Development Log](documents/development_log.md)
