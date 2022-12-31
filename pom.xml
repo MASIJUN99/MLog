@@ -19,7 +19,7 @@
     <maven.compiler.target>11</maven.compiler.target>
 
     <spring.version>5.3.18</spring.version>
-    <spring-boot-auto-configuration-processor.version>2.6.6</spring-boot-auto-configuration-processor.version>
+    <spring-boot.version>2.6.6</spring-boot.version>
     <revision>1.0.SNAPSHOT</revision>
     <mlog.version>1.0.SNAPSHOT</mlog.version>
   </properties>
@@ -66,8 +66,14 @@
 
       <dependency>
         <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-autoconfigure</artifactId>
+        <version>${spring-boot.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-configuration-processor</artifactId>
-        <version>${spring-boot-auto-configuration-processor.version}</version>
+        <version>${spring-boot.version}</version>
         <optional>true</optional>
       </dependency>
     </dependencies>
