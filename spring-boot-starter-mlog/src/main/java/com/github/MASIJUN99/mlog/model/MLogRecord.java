@@ -5,11 +5,6 @@ import java.util.Date;
 public class MLogRecord {
 
   /**
-   * 日志自增id
-   */
-  protected Long id;
-
-  /**
    * 操作者
    */
   protected String operator;
@@ -68,14 +63,6 @@ public class MLogRecord {
    * Trace id
    */
   protected String traceId;
-
-  public Long getId() {
-    return id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
 
   public Boolean getSuccess() {
     return success;
@@ -272,7 +259,6 @@ public class MLogRecord {
   @Override
   public String toString() {
     return "MLogRecord{" +
-        "id=" + id +
         ", operator='" + operator + '\'' +
         ", success=" + success +
         ", exception='" + exception + '\'' +
