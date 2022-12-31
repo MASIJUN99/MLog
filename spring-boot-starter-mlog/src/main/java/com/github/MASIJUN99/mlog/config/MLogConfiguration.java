@@ -22,13 +22,13 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 @Configuration
 @EnableAspectJAutoProxy
 @EnableConfigurationProperties(MLogProperties.class)
-public class TgouLogConfiguration {
+public class MLogConfiguration {
 
   private final LogService logService;
   private final OperatorService operatorService;
   private final TraceIdService traceIdService;
 
-  public TgouLogConfiguration(LogService logService,
+  public MLogConfiguration(LogService logService,
       OperatorService operatorService,
       TraceIdService traceIdService) {
     this.logService = logService;
