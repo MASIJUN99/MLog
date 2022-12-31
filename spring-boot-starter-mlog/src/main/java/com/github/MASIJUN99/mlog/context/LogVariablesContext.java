@@ -4,17 +4,37 @@ import static com.github.MASIJUN99.mlog.constant.LogVariablesConstant.currentVal
 import static com.github.MASIJUN99.mlog.constant.LogVariablesConstant.originValueKey;
 
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Stack;
 import org.springframework.util.SerializationUtils;
 
 public class LogVariablesContext {
 
   private static Boolean flag = false;
 
-  private static final ThreadLocal<Map<String, Object>> threadLocal =
-      ThreadLocal.withInitial(HashMap::new);
+  private static Stack<Method> callStack = new Stack<>();
+
+  private static final ThreadLocal<Stack<Map<String, Object>>> threadLocal =
+      ThreadLocal.withInitial(Stack::new);
+
+  /**
+   * 进入新方法时，为threadlocal添加一个新的Map
+   */
+  public static void push() {
+    Stack<Map<String, Object>> stack = threadLocal.get();
+    stack.push(new HashMap<>());
+  }
+
+  /**
+   * 方法结束时，删除一个map
+   */
+  public static void pop() {
+    Stack<Map<String, Object>> stack = threadLocal.get();
+    stack.pop();
+  }
 
   /**
    * 设置上下文变量
@@ -22,9 +42,10 @@ public class LogVariablesContext {
    * @param value 值
    */
   public synchronized static <T extends Serializable> void setVariable(String key, T value) {
-    Map<String, Object> map = threadLocal.get();
+    Stack<Map<String, Object>> stack = threadLocal.get();
+    Map<String, Object> map = stack.peek();
     map.put(key, SerializationUtils.deserialize(SerializationUtils.serialize(value)));
-    threadLocal.set(map);
+//    threadLocal.set(map);
   }
 
   /**
@@ -42,7 +63,8 @@ public class LogVariablesContext {
    * @param key 键
    */
   public static Object getVariable(String key) {
-    Map<String, Object> map = threadLocal.get();
+    Stack<Map<String, Object>> stack = threadLocal.get();
+    Map<String, Object> map = stack.peek();
     return map.get(key);
   }
 
@@ -51,7 +73,7 @@ public class LogVariablesContext {
    * @return 映射map
    */
   public static Map<String, Object> getAllVariables() {
-    return threadLocal.get();
+    return threadLocal.get().peek();
   }
 
   /**
@@ -106,6 +128,8 @@ public class LogVariablesContext {
    */
   public static void destroy() {
     flag = false;
+    callStack = new Stack<>();
     threadLocal.remove();
   }
+
 }

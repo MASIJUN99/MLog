@@ -80,6 +80,7 @@ public class MLogAspect {
   private Object around(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
     // 进入切点
     Object res;
+    LogVariablesContext.push();
     // 此处为非嵌套调用, 即首次调起
     if (!LogVariablesContext.isRecursion()) {
       LogVariablesContext.setRecursionFlag();  // 设置下次在被调用即为嵌套调用
@@ -100,7 +101,7 @@ public class MLogAspect {
   }
 
   private void handle(ProceedingJoinPoint proceedingJoinPoint, Date startTime, Date endTime) {
-    handle(proceedingJoinPoint, startTime, endTime, null);
+    handle(proceedingJoinPoint, startTime, endTime, "");
   }
 
   /**
@@ -130,7 +131,7 @@ public class MLogAspect {
           // 2.2.3 获取方法上的自定义注解
           MLog mLog = method.getAnnotation(MLog.class);
           // 2.3 获得SpEL模板
-          String template = exceptionContent == null ? mLog.success() : mLog.fail();
+          String template = StringUtils.hasText(exceptionContent) ? mLog.success() : mLog.fail();
 
           // 3. 拼装日志实体类
           MLogRecordBuilder builder = MLogRecord.builder();
@@ -139,8 +140,8 @@ public class MLogAspect {
               getStringValue(mLog.operator(), context) :  // 解析SpEL获得
               operatorService.getCurrentOperator());  // 通过接口获得
           // 3.2 是否成功
-          builder.success(exceptionContent == null);
-          builder.exception(exceptionContent);
+          builder.success(StringUtils.hasText(exceptionContent));
+          builder.exception(StringUtils.hasText(exceptionContent) ? "" : exceptionContent);
           // 3.3 业务实体坐标
           builder.business(mLog.business().getName());
           // 3.4 业务实体唯一id

@@ -15,11 +15,6 @@ public class MLogRecord {
   protected String operator;
 
   /**
-   * 业务命名空间id
-   */
-  protected Long namespaceId;
-
-  /**
    * 业务是否成功
    */
   protected Boolean success;
@@ -80,14 +75,6 @@ public class MLogRecord {
 
   public void setId(Long id) {
     this.id = id;
-  }
-
-  public Long getNamespaceId() {
-    return namespaceId;
-  }
-
-  public void setNamespaceId(Long namespaceId) {
-    this.namespaceId = namespaceId;
   }
 
   public Boolean getSuccess() {
@@ -191,7 +178,6 @@ public class MLogRecord {
   }
 
   public static class MLogRecordBuilder {
-    private Long namespaceId;
     private Boolean success;
     private String exception;
     private String business;
@@ -204,11 +190,6 @@ public class MLogRecord {
     private Date endTime;
     private String signature;
     private String traceId;
-
-    public MLogRecordBuilder namespaceId(Long namespaceId) {
-      this.namespaceId = namespaceId;
-      return this;
-    }
 
     public MLogRecordBuilder success(Boolean success) {
       this.success = success;
@@ -272,7 +253,6 @@ public class MLogRecord {
 
     public MLogRecord build() {
       MLogRecord mLogRecord = new MLogRecord();
-      mLogRecord.setNamespaceId(namespaceId);
       mLogRecord.setSuccess(success);
       mLogRecord.setException(exception);
       mLogRecord.setOriginValue(originValue);
@@ -294,7 +274,6 @@ public class MLogRecord {
     return "MLogRecord{" +
         "id=" + id +
         ", operator='" + operator + '\'' +
-        ", namespaceId=" + namespaceId +
         ", success=" + success +
         ", exception='" + exception + '\'' +
         ", business='" + business + '\'' +
