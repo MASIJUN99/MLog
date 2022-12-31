@@ -33,4 +33,4 @@ reference for [IntelliJ IDEA](https://www.jetbrains.com/help/idea/2022.3/import-
 
 ## Test
 
-If you add some features new, you could write some sample in [sample](./sample).
+If you add some features new, you could write some sample in [sample](../sample).

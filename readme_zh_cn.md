@@ -57,7 +57,7 @@ IDEA用户可以参考 [IntelliJ IDEA](https://www.jetbrains.com/help/idea/2022.
 
 谢谢GitHub给我带来的成长，我也愿意为开源社区的发展贡献自己的力量，我也非常希望向各位前辈学习，欢迎提交代码，我会认真查看学习的！
 
-开发者请参考 [development guide](./development.md)
+开发者请参考 [development guide](documents/development.md)
 
 ## 快照
 
@@ -70,3 +70,9 @@ IDEA用户可以参考 [IntelliJ IDEA](https://www.jetbrains.com/help/idea/2022.
 ## 参考文献
 
 [如何优雅地记录操作日志？](https://mp.weixin.qq.com/s/JC51S_bI02npm4CE5NEEow)
+
+## 文档
+
+[更新日志](documents/update_log.md)
+
+[开发日志](documents/development_log.md)
