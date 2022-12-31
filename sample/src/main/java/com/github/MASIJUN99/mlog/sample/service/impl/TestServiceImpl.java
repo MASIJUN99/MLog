@@ -26,6 +26,21 @@ public class TestServiceImpl implements TestService {
 
   @Override
   @MLog(
+      success = "修改成功, 实体类为#{#entity.key}",
+      fail = "修改失败, 请检查报错",
+      currentValue = "#{#entity}",
+      business = TestModel.class,
+      businessNo = "#{#entity.id}",
+      condition = "#{#entity.id != null}"
+  )
+  public void update(TestModel model) {
+    LogVariablesContext.setOriginValue(model);
+    LogVariablesContext.setVariable("entity", model);
+    // real business logic
+  }
+
+  @Override
+  @MLog(
       success = "嵌套调用，如果嵌套失败会直接报错, 实体类为#{#entity.key}",
       business = TestModel.class
   )

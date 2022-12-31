@@ -14,17 +14,24 @@ public class MLogTest {
   private TestService testService;
 
   @Test
-  public void test() throws InterruptedException {
+  public void add() throws InterruptedException {
     TestModel mock = JMockData.mock(TestModel.class);
     testService.add(mock);
-    Thread.sleep(2000);  // wait for async result...
+    Thread.sleep(1000);  // wait for async result...
   }
 
   @Test
-  public void test2() throws InterruptedException {
+  public void update() throws InterruptedException {
+    TestModel mock = JMockData.mock(TestModel.class);
+    testService.update(mock);
+    Thread.sleep(1000);  // wait for async result...
+  }
+
+  @Test
+  public void recursion() throws InterruptedException {
     TestModel mock = JMockData.mock(TestModel.class);
     testService.recursion(mock);
-    Thread.sleep(2000);  // wait for async result...
+    Thread.sleep(1000);  // wait for async result...
   }
 
 }
