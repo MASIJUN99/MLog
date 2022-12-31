@@ -4,26 +4,48 @@ import static com.github.MASIJUN99.mlog.constant.LogVariablesConstant.currentVal
 import static com.github.MASIJUN99.mlog.constant.LogVariablesConstant.originValueKey;
 
 import java.io.Serializable;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Stack;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.util.SerializationUtils;
 
 public class LogVariablesContext {
 
   private static Boolean flag = false;
 
-  private static Stack<Method> callStack = new Stack<>();
+  private static Stack<MethodSignature> callStack = new Stack<>();
 
   private static final ThreadLocal<Stack<Map<String, Object>>> threadLocal =
       ThreadLocal.withInitial(Stack::new);
 
   /**
+   * 进入新方法时，记录方法签名
+   */
+  public static void call(MethodSignature signature) {
+    callStack.push(signature);
+    LogVariablesContext.push();
+  }
+
+  /**
+   * 离开当前调用
+   */
+  public static void hang() {
+    if (threadLocal.get().isEmpty() || threadLocal.get().size() == 1) {
+      flag = false;
+      callStack = new Stack<>();
+      threadLocal.remove();
+    } else {
+      callStack.pop();
+      threadLocal.get().pop();
+    }
+  }
+
+  /**
    * 进入新方法时，为threadlocal添加一个新的Map
    */
-  public static void push() {
+  private static void push() {
     Stack<Map<String, Object>> stack = threadLocal.get();
     stack.push(new HashMap<>());
   }
@@ -31,9 +53,17 @@ public class LogVariablesContext {
   /**
    * 方法结束时，删除一个map
    */
-  public static void pop() {
+  private static void pop() {
     Stack<Map<String, Object>> stack = threadLocal.get();
     stack.pop();
+  }
+
+  /**
+   * 获得当前调用的方法签名
+   * @return 方法签名
+   */
+  public static MethodSignature currentMethodSignature() {
+    return callStack.peek();
   }
 
   /**
@@ -121,15 +151,6 @@ public class LogVariablesContext {
    */
   public static void setRecursionFlag() {
     LogVariablesContext.flag = true;
-  }
-
-  /**
-   * 销毁
-   */
-  public static void destroy() {
-    flag = false;
-    callStack = new Stack<>();
-    threadLocal.remove();
   }
 
 }

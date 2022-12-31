@@ -80,22 +80,17 @@ public class MLogAspect {
   private Object around(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
     // 进入切点
     Object res;
-    LogVariablesContext.push();
-    // 此处为非嵌套调用, 即首次调起
-    if (!LogVariablesContext.isRecursion()) {
-      LogVariablesContext.setRecursionFlag();  // 设置下次在被调用即为嵌套调用
-      Date startTime = new Date();
-      try {
-        res = proceedingJoinPoint.proceed();
-        handle(proceedingJoinPoint, startTime, new Date());
-      } catch (Throwable throwable) {
-        // 需要抛出 不然无法正常捕获异常
-        handle(proceedingJoinPoint, startTime, new Date(), getExceptionStackTrace(throwable));
-        throw throwable;
-      }
-    } else {
-      // 此处为嵌套调用, 即日志组件调用另一个日志组件
+    LogVariablesContext.call((MethodSignature) proceedingJoinPoint.getSignature());
+    Date startTime = new Date();
+    try {
       res = proceedingJoinPoint.proceed();
+      handle(proceedingJoinPoint, startTime, new Date());
+    } catch (Throwable throwable) {
+      // 需要抛出 不然无法正常捕获异常
+      handle(proceedingJoinPoint, startTime, new Date(), getExceptionStackTrace(throwable));
+      throw throwable;
+    } finally {
+      LogVariablesContext.hang();
     }
     return res;
   }
@@ -131,7 +126,7 @@ public class MLogAspect {
           // 2.2.3 获取方法上的自定义注解
           MLog mLog = method.getAnnotation(MLog.class);
           // 2.3 获得SpEL模板
-          String template = StringUtils.hasText(exceptionContent) ? mLog.success() : mLog.fail();
+          String template = !StringUtils.hasText(exceptionContent) ? mLog.success() : mLog.fail();
 
           // 3. 拼装日志实体类
           MLogRecordBuilder builder = MLogRecord.builder();
@@ -185,8 +180,6 @@ public class MLogAspect {
       });
     } catch (Exception e) {
       logService.failAction(e);
-    } finally {
-      LogVariablesContext.destroy();  // 销毁ThreadLocal
     }
   }
 

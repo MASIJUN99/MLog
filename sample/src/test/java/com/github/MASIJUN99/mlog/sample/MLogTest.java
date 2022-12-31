@@ -20,4 +20,11 @@ public class MLogTest {
     Thread.sleep(2000);  // wait for async result...
   }
 
+  @Test
+  public void test2() throws InterruptedException {
+    TestModel mock = JMockData.mock(TestModel.class);
+    testService.recursion(mock);
+    Thread.sleep(2000);  // wait for async result...
+  }
+
 }
