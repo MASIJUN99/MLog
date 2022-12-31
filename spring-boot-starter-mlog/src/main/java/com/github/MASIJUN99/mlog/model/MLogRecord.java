@@ -288,4 +288,24 @@ public class MLogRecord {
       return mLogRecord;
     }
   }
+
+  @Override
+  public String toString() {
+    return "MLogRecord{" +
+        "id=" + id +
+        ", operator='" + operator + '\'' +
+        ", namespaceId=" + namespaceId +
+        ", success=" + success +
+        ", exception='" + exception + '\'' +
+        ", business='" + business + '\'' +
+        ", businessNo='" + businessNo + '\'' +
+        ", originValue=" + originValue +
+        ", currentValue=" + currentValue +
+        ", content='" + content + '\'' +
+        ", startTime=" + startTime +
+        ", endTime=" + endTime +
+        ", signature='" + signature + '\'' +
+        ", traceId='" + traceId + '\'' +
+        '}';
+  }
 }
