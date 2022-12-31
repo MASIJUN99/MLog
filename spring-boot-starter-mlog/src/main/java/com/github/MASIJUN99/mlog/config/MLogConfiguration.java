@@ -12,14 +12,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.expression.common.TemplateParserContext;
 import org.springframework.expression.spel.SpelCompilerMode;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
-@Configuration
 @EnableAspectJAutoProxy
 @EnableConfigurationProperties(MLogProperties.class)
 public class MLogConfiguration {
@@ -37,7 +35,7 @@ public class MLogConfiguration {
   }
 
   @Bean
-  public MLogAspect tgouLogAspect(MLogProperties mLogProperties) {
+  public MLogAspect mLogAspect(MLogProperties mLogProperties) {
     return new MLogAspect(
         mLogExecutorService(mLogProperties),
         logService, operatorService, traceIdService,
