@@ -1,7 +1,12 @@
 # <p align="center">🗊 MLog</a></p>
 
 
-<p align="center">An open-source annotations-drive log util for spring boot!</p>
+<p align="center">An open-source annotations-base log util for spring boot!</p>
+<p align="center">开源、易用、基于注解、低入侵的日志组件</p>
+
+<p align="center">
+    <a href="./readme_zh_cn.md">中文文档</a>
+</p>
 
 <p align="center">
   <a href="https://github.com/MASIJUN99/MLog/stargazers"><img alt="stars" src="https://img.shields.io/github/stars/MASIJUN99/MLog" /></a>
@@ -16,8 +21,8 @@
 
 ## Features
 
-* Open-source util for spring boot
-* Support center maven repo (TODO)
+* Open-source component for spring boot
+* Support public maven repo (TODO)
 * Easy to customize, easy to use
 * Low invasion of current code
 
@@ -52,5 +57,14 @@ Any code you contributed will make this community better!
 
 See more in [development guide](./development.md)
 
+## SNAPSHOT
+
+![img.png](imgs/snapshot1.png)
+
+![img2.png](imgs/snapshot2.png)
+
 ## License
 
+## Reference
+
+[如何优雅地记录操作日志？](https://mp.weixin.qq.com/s/JC51S_bI02npm4CE5NEEow)

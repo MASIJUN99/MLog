@@ -6,5 +6,7 @@ public interface TestService {
 
   void add(TestModel model);
 
+  void update(TestModel model);
+
   void recursion(TestModel model);
 }
