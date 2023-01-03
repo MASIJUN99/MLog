@@ -1,6 +1,7 @@
 package com.github.MASIJUN99.mlog.config;
 
 import com.github.MASIJUN99.mlog.aspect.MLogAspect;
+import com.github.MASIJUN99.mlog.context.MLogContextAware;
 import com.github.MASIJUN99.mlog.properties.MLogProperties;
 import com.github.MASIJUN99.mlog.properties.MLogProperties.SPELTemplate;
 import com.github.MASIJUN99.mlog.properties.MLogProperties.ThreadPool;
@@ -64,5 +65,10 @@ public class MLogConfiguration {
         threadPool.getKeepAliveTime(),
         threadPool.getUnit(),
         new LinkedBlockingQueue<>(1000));
+  }
+
+  @Bean
+  public MLogContextAware mLogContextAware() {
+    return new MLogContextAware();
   }
 }

@@ -16,7 +16,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -216,7 +215,7 @@ public class MLogAspect {
       ByteArrayOutputStream bos = new ByteArrayOutputStream();
       PrintStream printStream = new PrintStream(bos);
       throwable.printStackTrace(printStream);
-      exceptionContent = bos.toString(StandardCharsets.UTF_8);
+      exceptionContent = bos.toString("UTF-8");
       bos.close();
       printStream.close();
     }
