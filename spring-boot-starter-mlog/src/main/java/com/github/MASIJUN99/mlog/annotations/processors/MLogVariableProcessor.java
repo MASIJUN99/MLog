@@ -8,7 +8,6 @@ import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.tree.JCTree.JCAnnotation;
 import com.sun.tools.javac.tree.JCTree.JCAssign;
 import com.sun.tools.javac.tree.JCTree.JCExpression;
-import com.sun.tools.javac.tree.JCTree.JCExpressionStatement;
 import com.sun.tools.javac.tree.JCTree.JCFieldAccess;
 import com.sun.tools.javac.tree.JCTree.JCMethodDecl;
 import com.sun.tools.javac.tree.JCTree.JCStatement;
@@ -72,35 +71,47 @@ public class MLogVariableProcessor extends AbstractProcessor {
 
   private ArrayList<JCStatement> handleMLogMethod(JCMethodDecl jcMethodDecl) {
     ArrayList<JCStatement> statements = new ArrayList<>();
-    jcMethodDecl.getBody().getStatements().forEach(state -> {
-      if (state instanceof JCVariableDecl) {
-        JCVariableDecl jcVariableDecl = (JCVariableDecl) state;
-        for (JCAnnotation annotation : jcVariableDecl.mods.annotations) {
-          if (isMLogVariable(annotation)) {
-            String key = getKey(annotation, jcVariableDecl);
-            // type list
-//        List<JCExpression> type = List.of(memberAccess("java.lang.String"), memberAccess("java.lang.Object"));
-            List<JCExpression> type = List.nil();
-            // method
-            JCFieldAccess method = treeMaker
-                .Select(treeMaker.Ident(names.fromString("LogVariablesContext")),
-                    names.fromString("setVariable"));
-            // var
-            List<JCExpression> vars = List.of(treeMaker.Literal(key),
-                treeMaker.Ident(names.fromString(jcVariableDecl.name.toString())));
-            JCExpressionStatement exec = treeMaker.Exec(treeMaker.Apply(type, method, vars));
-            statements.add(exec);
-          }
-        }
+
+    jcMethodDecl.getParameters().forEach(param -> {
+      JCStatement jcStatement = handleParameter(param);
+      if (jcStatement != null) {
+        statements.add(jcStatement);
       }
+    });
+
+    jcMethodDecl.getBody().getStatements().forEach(state -> {
+      state.accept(new TreeTranslator(){
+        @Override
+        public void visitVarDef(JCVariableDecl jcVariableDecl) {
+          statements.add(handleVarDecl(jcVariableDecl));
+          super.visitVarDef(jcVariableDecl);
+        }
+      });
     });
     for (JCStatement statement : statements) {
       messager.printMessage(Kind.NOTE, statement.toString());
       jcMethodDecl.getBody().stats = jcMethodDecl.getBody().getStatements().append(statement);
-//      messager.printMessage(Kind.NOTE, jcMethodDecl.getBody().getStatements().toString());
     }
-//    messager.printMessage(Kind.WARNING, jcMethodDecl.getBody().stats.toString());
     return statements;
+  }
+
+  private JCStatement handleParameter(JCVariableDecl param) {
+    for (JCAnnotation annotation : param.mods.annotations) {
+      if (isMLogVariable(annotation)) {
+        String key = getKey(annotation, param);
+        // type list
+        List<JCExpression> type = List.nil();
+        // method
+        JCFieldAccess method = treeMaker
+            .Select(treeMaker.Ident(names.fromString("LogVariablesContext")),
+                names.fromString("setVariable"));
+        // var
+        List<JCExpression> vars = List.of(treeMaker.Literal(key),
+            treeMaker.Ident(names.fromString(param.name.toString())));
+        return treeMaker.Exec(treeMaker.Apply(type, method, vars));
+      }
+    }
+    return null;
   }
 
   private JCStatement handleVarDecl(JCVariableDecl jcVariableDecl) {
@@ -116,8 +127,7 @@ public class MLogVariableProcessor extends AbstractProcessor {
         // var
         List<JCExpression> vars = List.of(treeMaker.Literal(key),
             treeMaker.Ident(names.fromString(jcVariableDecl.name.toString())));
-        JCExpressionStatement exec = treeMaker.Exec(treeMaker.Apply(type, method, vars));
-        return exec;
+        return treeMaker.Exec(treeMaker.Apply(type, method, vars));
       }
     }
     return null;
@@ -130,28 +140,25 @@ public class MLogVariableProcessor extends AbstractProcessor {
   }
 
   private String getKey(JCAnnotation annotation, JCVariableDecl variableDecl) {
-    final String[] value = {""};
-    final String[] key = {""};
-    for (JCExpression argument : annotation.getArguments()) {
-      argument.accept(new TreeTranslator(){
-        @Override
-        public void visitAssign(JCAssign jcAssign) {
-          if (jcAssign.lhs.toString().equalsIgnoreCase("value")) {
-            String s = jcAssign.rhs.toString();
-            value[0] = s.substring(1, s.length() - 1);
-          }
-          if (jcAssign.lhs.toString().equalsIgnoreCase("key")) {
-            String s = jcAssign.rhs.toString();
-            key[0] = s.substring(1, s.length() - 1);
-          }
-          super.visitAssign(jcAssign);
+    String value = "";
+    String key = "";
+    for (JCExpression arg : annotation.getArguments()) {
+      if (arg instanceof JCAssign) {
+        JCAssign jcAssign = (JCAssign) arg;
+        if (jcAssign.lhs.toString().equalsIgnoreCase("value")) {
+          String s = jcAssign.rhs.toString();
+          value = s.substring(1, s.length() - 1);
         }
-      });
+        if (jcAssign.lhs.toString().equalsIgnoreCase("key")) {
+          String s = jcAssign.rhs.toString();
+          key = s.substring(1, s.length() - 1);
+        }
+      }
     }
-    if (StringUtils.hasText(value[0])) {
-      return value[0];
-    } else if (StringUtils.hasText(key[0])) {
-      return key[0];
+    if (StringUtils.hasText(value)) {
+      return value;
+    } else if (StringUtils.hasText(key)) {
+      return key;
     } else {
       return variableDecl.name.toString();
     }
