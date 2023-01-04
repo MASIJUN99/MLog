@@ -10,9 +10,15 @@ import org.springframework.core.annotation.AliasFor;
 @Target({ElementType.LOCAL_VARIABLE, ElementType.PARAMETER, ElementType.TYPE})
 public @interface MLogVariable {
 
+  /**
+   * key in LogVariableContext
+   */
   @AliasFor("key")
   String value() default "";
 
+  /**
+   * alias name for value()
+   */
   @AliasFor("value")
   String key() default "";
 
