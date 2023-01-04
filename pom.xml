@@ -17,7 +17,8 @@
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
-    
+
+    <mlog.version>1.1-SNAPSHOT</mlog.version>
     <spring.version>5.3.18</spring.version>
     <spring-boot.version>2.6.6</spring-boot.version>
   </properties>
