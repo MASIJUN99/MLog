@@ -59,9 +59,15 @@ See more in [development guide](documents/development.md)
 
 ## SNAPSHOT
 
+Annotation-base to add log in business.
+
 ![img.png](imgs/snapshot1.png)
 
 ![img2.png](imgs/snapshot2.png)
+
+In 1.1-SNAPSHOT, you could use annotation to add variables to `LogVariableContext`.
+
+![img.png](imgs/snapshot3.png)
 
 ## License
 

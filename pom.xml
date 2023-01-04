@@ -15,13 +15,11 @@
   </modules>
 
   <properties>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
-
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    
     <spring.version>5.3.18</spring.version>
     <spring-boot.version>2.6.6</spring-boot.version>
-    <revision>1.0.SNAPSHOT</revision>
-    <mlog.version>1.0.SNAPSHOT</mlog.version>
   </properties>
 
   <dependencyManagement>

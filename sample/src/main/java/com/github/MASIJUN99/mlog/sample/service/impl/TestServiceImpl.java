@@ -1,6 +1,7 @@
 package com.github.MASIJUN99.mlog.sample.service.impl;
 
 import com.github.MASIJUN99.mlog.annotations.MLog;
+import com.github.MASIJUN99.mlog.annotations.MLogVariable;
 import com.github.MASIJUN99.mlog.context.LogVariablesContext;
 import com.github.MASIJUN99.mlog.sample.model.TestModel;
 import com.github.MASIJUN99.mlog.sample.service.TestRecursionService;
@@ -9,6 +10,7 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 @Service
+@MLogVariable
 public class TestServiceImpl implements TestService {
 
   @Resource
@@ -33,9 +35,7 @@ public class TestServiceImpl implements TestService {
       businessNo = "#{#entity.id}",
       condition = "#{#entity.id != null}"
   )
-  public void update(TestModel model) {
-    LogVariablesContext.setOriginValue(model);
-    LogVariablesContext.setVariable("entity", model);
+  public void update(@MLogVariable(key = "entity") TestModel model) {
     // real business logic
   }
 
