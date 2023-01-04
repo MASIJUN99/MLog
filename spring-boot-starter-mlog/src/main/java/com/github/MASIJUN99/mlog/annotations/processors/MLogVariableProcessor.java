@@ -69,9 +69,10 @@ public class MLogVariableProcessor extends AbstractProcessor {
     return true;
   }
 
-  private ArrayList<JCStatement> handleMLogMethod(JCMethodDecl jcMethodDecl) {
+  private void handleMLogMethod(JCMethodDecl jcMethodDecl) {
     ArrayList<JCStatement> statements = new ArrayList<>();
 
+    // 遍历方法参数, 检测注解存在, 若返回的注解拼接语句不为空, 那就加
     jcMethodDecl.getParameters().forEach(param -> {
       JCStatement jcStatement = handleParameter(param);
       if (jcStatement != null) {
@@ -83,7 +84,10 @@ public class MLogVariableProcessor extends AbstractProcessor {
       state.accept(new TreeTranslator(){
         @Override
         public void visitVarDef(JCVariableDecl jcVariableDecl) {
-          statements.add(handleVarDecl(jcVariableDecl));
+          JCStatement jcStatement = handleVarDecl(jcVariableDecl);
+          if (jcStatement != null) {
+            statements.add(jcStatement);
+          }
           super.visitVarDef(jcVariableDecl);
         }
       });
@@ -92,7 +96,6 @@ public class MLogVariableProcessor extends AbstractProcessor {
       messager.printMessage(Kind.NOTE, statement.toString());
       jcMethodDecl.getBody().stats = jcMethodDecl.getBody().getStatements().append(statement);
     }
-    return statements;
   }
 
   private JCStatement handleParameter(JCVariableDecl param) {

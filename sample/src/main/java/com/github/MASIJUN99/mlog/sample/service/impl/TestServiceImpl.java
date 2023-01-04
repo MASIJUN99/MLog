@@ -36,10 +36,9 @@ public class TestServiceImpl implements TestService {
       condition = "#{#entity.id != null}"
   )
   public void update(@MLogVariable TestModel model) {
-    @MLogVariable(value = "111", key = "123") TestModel model1 = model;
+    @MLogVariable(key = "entity") TestModel model1 = model;
+    int i = 1;
     model1.setId(112L);
-    LogVariablesContext.setOriginValue(model1);
-    LogVariablesContext.setVariable("entity", model1);
     // real business logic
   }
 
