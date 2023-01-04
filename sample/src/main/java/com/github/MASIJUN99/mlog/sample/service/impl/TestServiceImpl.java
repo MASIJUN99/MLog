@@ -35,10 +35,7 @@ public class TestServiceImpl implements TestService {
       businessNo = "#{#entity.id}",
       condition = "#{#entity.id != null}"
   )
-  public void update(@MLogVariable TestModel model) {
-    @MLogVariable(key = "entity") TestModel model1 = model;
-    int i = 1;
-    model1.setId(112L);
+  public void update(@MLogVariable(key = "entity") TestModel model) {
     // real business logic
   }
 
