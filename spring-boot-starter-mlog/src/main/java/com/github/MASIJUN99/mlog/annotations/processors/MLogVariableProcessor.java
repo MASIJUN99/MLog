@@ -17,6 +17,7 @@ import com.sun.tools.javac.tree.TreeTranslator;
 import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.List;
 import com.sun.tools.javac.util.Names;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
@@ -45,6 +46,9 @@ public class MLogVariableProcessor extends AbstractProcessor {
 
   @Override
   public synchronized void init(ProcessingEnvironment processingEnv) {
+    // 消除Idea编译器警告
+    processingEnv = jbUnwrap(ProcessingEnvironment.class, processingEnv);
+
     this.trees = JavacTrees.instance(processingEnv);
     super.init(processingEnv);
     Context context = ((JavacProcessingEnvironment) processingEnv).getContext();
@@ -70,18 +74,27 @@ public class MLogVariableProcessor extends AbstractProcessor {
   }
 
   private void handleMLogMethod(JCMethodDecl jcMethodDecl) {
-    ArrayList<JCStatement> statements = new ArrayList<>();
 
     // 遍历方法参数, 检测注解存在, 若返回的注解拼接语句不为空, 那就加
-    jcMethodDecl.getParameters().forEach(param -> {
+    // 此处产生的语句应放置于方法体最前方!
+    ArrayList<JCStatement> statements = new ArrayList<>();
+
+    for (JCVariableDecl param : jcMethodDecl.getParameters()) {
       JCStatement jcStatement = handleParameter(param);
       if (jcStatement != null) {
         statements.add(jcStatement);
       }
-    });
+    }
 
-    jcMethodDecl.getBody().getStatements().forEach(state -> {
-      state.accept(new TreeTranslator(){
+    for (JCStatement statement : jcMethodDecl.getBody().getStatements()) {
+      statements.add(statement);
+      statement.accept(new TreeTranslator(){
+        @Override
+        public void visitAssign(JCAssign jcAssign) {
+          JCStatement jcStatement = handleAssign(jcAssign);
+          super.visitAssign(jcAssign);
+        }
+
         @Override
         public void visitVarDef(JCVariableDecl jcVariableDecl) {
           JCStatement jcStatement = handleVarDecl(jcVariableDecl);
@@ -91,13 +104,14 @@ public class MLogVariableProcessor extends AbstractProcessor {
           super.visitVarDef(jcVariableDecl);
         }
       });
-    });
-    for (JCStatement statement : statements) {
-      messager.printMessage(Kind.NOTE, statement.toString());
-      jcMethodDecl.getBody().stats = jcMethodDecl.getBody().getStatements().append(statement);
     }
+    jcMethodDecl.getBody().stats = array2List(statements);
   }
 
+
+  /**
+   * 处理方法参数
+   */
   private JCStatement handleParameter(JCVariableDecl param) {
     for (JCAnnotation annotation : param.mods.annotations) {
       if (isMLogVariable(annotation)) {
@@ -117,6 +131,9 @@ public class MLogVariableProcessor extends AbstractProcessor {
     return null;
   }
 
+  /**
+   * 处理声明变量
+   */
   private JCStatement handleVarDecl(JCVariableDecl jcVariableDecl) {
     for (JCAnnotation annotation : jcVariableDecl.mods.annotations) {
       if (isMLogVariable(annotation)) {
@@ -136,12 +153,31 @@ public class MLogVariableProcessor extends AbstractProcessor {
     return null;
   }
 
+  /**
+   * 处理变量赋值(暂时不做)
+   */
+  private JCStatement handleAssign(JCAssign jcAssign) {
+//    messager.printMessage(Kind.NOTE, jcAssign.toString());
+    return null;
+  }
+
+  /**
+   * 判断注解是不是MLogVariabke
+   * @param annotation 注解
+   * @return 是否
+   */
   private boolean isMLogVariable(JCAnnotation annotation) {
     String[] split = MLogVariable.class.getCanonicalName().split("\\.");
     return annotation.getAnnotationType().toString()
         .equalsIgnoreCase(split[split.length - 1]);
   }
 
+  /**
+   * 决定变量上注解中或者变量名的key
+   * @param annotation 注解
+   * @param variableDecl 变量
+   * @return key
+   */
   private String getKey(JCAnnotation annotation, JCVariableDecl variableDecl) {
     String value = "";
     String key = "";
@@ -167,13 +203,26 @@ public class MLogVariableProcessor extends AbstractProcessor {
     }
   }
 
-  private JCExpression memberAccess(String className) {
-    String[] array = className.split("\\.");
-    JCExpression expression = treeMaker.Ident(names.fromString(array[0]));
-    for (int i = 1; i < array.length; i++) {
-      expression = treeMaker.Select(expression, names.fromString(array[i]));
+  /**
+   * Idea给出的解决方案 消除编译器警告
+   */
+  private static <T> T jbUnwrap(Class<? extends T> iface, T wrapper) {
+    T unwrapped = null;
+    try {
+      final Class<?> apiWrappers = wrapper.getClass().getClassLoader().loadClass("org.jetbrains.jps.javac.APIWrappers");
+      final Method unwrapMethod = apiWrappers.getDeclaredMethod("unwrap", Class.class, Object.class);
+      unwrapped = iface.cast(unwrapMethod.invoke(null, iface, wrapper));
     }
-    return expression;
+    catch (Throwable ignored) {}
+    return unwrapped != null? unwrapped : wrapper;
+  }
+
+  private <T> List<T> array2List(ArrayList<T> array) {
+    List<T> res = List.nil();
+    for (T t : array) {
+      res = res.append(t);
+    }
+    return res;
   }
 
 }

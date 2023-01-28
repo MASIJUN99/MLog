@@ -73,7 +73,7 @@
       <artifactId>jdk8.tools</artifactId>
       <version>8</version>
       <scope>system</scope>
-      <systemPath>${java.home}/../lib/tools.jar</systemPath>
+      <systemPath>${basedir}/lib/tools.jar</systemPath>
     </dependency>
   </dependencies>
 
